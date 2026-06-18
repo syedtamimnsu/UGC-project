@@ -22,7 +22,7 @@ export interface Project {
     userId?: string;
     user?: User;
     productName: string;
-    ProductDescription?: string;
+    productDescription?: string;
     userPrompt?: string;
     aspectRatio: string;
     targetLength?: string;
@@ -33,5 +33,5 @@ export interface Project {
     error?: string;
     createdAt: Date | string;
     updatedAt?: Date | string;
-    UploadedImages: string[];
+    uploadedImages: string[];
 }

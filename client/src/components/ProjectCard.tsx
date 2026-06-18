@@ -1,3 +1,4 @@
+import { Loader2Icon } from 'lucide-react'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Project } from '../types'
@@ -23,11 +24,78 @@ const ProjectCard = ({ gen, setGenerations, forCommunity = false }: {
                             className={`absolute inset-0 w-full h-full object-cover transition duration-500 ${gen.generatedVideo ? 'group-hover:opacity-0' : 'group-hover:scale-105'}`}
                         />
                     )}
+
+                    {gen.generatedVideo && (
+                        <video src={gen.generatedVideo} muted loop playsInline
+                        className="absolute inset-0 w-full object-cover opacity-0 group-hover:opacity-100 transition duration-500" 
+                        onMouseEnter={(e) => e.currentTarget.play()}
+                        onMouseLeave={(e) => e.currentTarget.pause()}
+                        />
+                        
+                    )
+                    }
+
+                    {(!gen.generatedImage && !gen.generatedVideo) && (
+                        <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-black/20">
+                            <Loader2Icon className="size-7 animate-spin" />
+                        </div>
+                    )
+                    }
+
+                    {/* status badges */}
+                    <div className="absolute left-3 top-3 flex gap-2 items-center">
+                        {gen.isGenerating && (
+                            <span className="text-xs px-2 py-1 bg-yellow-600/30">Generating...</span>
+                        )}
+
+                        {gen.isPublished && (
+                            <span className="text-xs px-2 py-1 bg-green-600/30">Published</span>
+                        )}
+                    </div>
+
+
+                    {/* source images */}
+                    <div className="absolute right-3 bottom-3">
+                        <img src={gen.uploadedImages[0]} alt="product" className="w-16 h-16 object-cover rounded-full animate-float" />
+                        <img src={gen.uploadedImages[1]} alt="model" className="w-16 h-16 object-cover rounded-full animate-float -ml-8" style={{ animationDelay: '3s' }} />
+
+                    </div>
+
+
+
+
+
                 </div>
 
                 {/* Details */}
                 <div className="p-3">
-                    <p className="text-sm font-medium text-white truncate">{gen.productName}</p>
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                            <h3 className="font-medium text-lg mb-1">{gen.productName}</h3>
+                            <p className="text-sm text-gray-400">Created: {new Date(gen.createdAt).toLocaleString()}</p>
+
+                            {gen.updatedAt && (
+                                <p className="text-sm text-gray-500">Updated: {new Date(gen.updatedAt).toLocaleString()}</p>
+                            )}
+                        </div>
+
+                        <div className="text-right">
+                            <div>
+                                <span className="text-xs px-2 py-1 bg-white/5 rounded-full">Aspect: {gen.aspectRatio}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Product descriptions */}
+                    <div className="mt-3">
+                        <p className="text-xs text-gray-400 mb-1">Description</p>
+                        <div className="text-sm text-gray-300 bg-white/3 p-2 rounded-md wrap-break-word">{gen.productDescription}</div>
+                    </div>
+
+                    {/* User Prompt */}
+                    <div className="mt-3">
+                        <div className="text-sm text-gray-300">{gen.userPrompt}</div>
+                    </div>
                 </div>
 
             </div>
