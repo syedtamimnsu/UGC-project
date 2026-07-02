@@ -1,4 +1,12 @@
+import generated1 from './generated1.png'; // men with trolly bag
+import generated2 from './generated2.png'; // women with trolly bag
+import generated3 from './generated3.png'; // men with shoes
+import generated4 from './generated4.png'; // women with shoes
+import generatedVideo1 from './generatedVideo1.mp4'; // random product men 9:16
+import generatedVideo2 from './generatedVideo2.mp4'; // random product women 16:9
 import logo from './logo.svg';
+import model1 from './model1.png'; // model men
+import model2 from './model2.jpg'; // model women
 import product1 from './product1.jpg'; // white watch
 import product2 from './product2.jpg'; // polaroid camera
 import product3 from './product3.jpg'; // sunglasses
@@ -6,14 +14,6 @@ import product4 from './product4.jpg'; // headphone
 import product5 from './product5.jpg'; // speaker
 import product6 from './product6.jpg'; // sneakers
 import product7 from './product7.png'; // trolly bag
-import model1 from './model1.png'; // model men
-import model2 from './model2.jpg'; // model women
-import generated1 from './generated1.png'; // men with trolly bag
-import generated2 from './generated2.png'; // women with trolly bag
-import generated3 from './generated3.png'; // men with shoes
-import generated4 from './generated4.png'; // women with shoes
-import generatedVideo1 from './generatedVideo1.mp4'; // random product men 9:16
-import generatedVideo2 from './generatedVideo2.mp4'; // random product women 16:9
 
 export const assets = {
     logo,

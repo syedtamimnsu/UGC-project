@@ -31,7 +31,7 @@ export const plansData = [
             'Basic website development',
             'Watermarked results',
             'Slower generation speed',
-            'email support'
+            
         ]
     },
     {
