@@ -5,6 +5,8 @@ import "dotenv/config";
 import express, { Request, Response } from 'express';
 import "./configs/instrument.mjs";
 import clerkWebhook from './controllers/clerk';
+import projectRouter from './routes/projectControllerRoute';
+import userRouter from './routes/userRoutes';
 
 const app = express();
 
@@ -27,6 +29,10 @@ app.get('/', (req: Request, res: Response) => {
 app.get("/debug-sentry", function mainHandler(req, res) {
     throw new Error("My first Sentry error!");
 });
+
+app.use('/api/user', userRouter)
+app.use('/api/project', projectRouter)
+
 
 
 
