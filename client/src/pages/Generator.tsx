@@ -1,38 +1,85 @@
+import { useAuth, useUser } from "@clerk/clerk-react"
 import { Loader2Icon, RectangleHorizontalIcon, RectangleVerticalIcon, Wand2Icon } from "lucide-react"
 import { useState } from "react"
+import toast from "react-hot-toast"
+import { useNavigate } from "react-router-dom"
 import { PrimaryButton } from "../components/Buttons"
 import Title from "../components/Title"
 import UploadZone from "../components/UploadZone"
+import api from "../configs/axios"
 
 function Generator() {
 
 
-const [name, setName] = useState('')
-const [productName, setProductName] = useState('')
-const [productDescription, setProductDescription] = useState('')
-const [aspectRatio, setAspectratio] = useState('9:16')
-const [productImage, setProductImage] = useState<File | null>(null)
-const [modelImage, setModelImage] = useState<File | null>(null)
-const [userPrompt, setUserPrompt] = useState('')
-const [isGenerating, setIsGenerating] = useState(false)
+    const {user} = useUser()
+    const {getToken} = useAuth()
+    const navigate = useNavigate()
+
+    const [name, setName] = useState('')
+    const [productName, setProductName] = useState('')
+    const [productDescription, setProductDescription] = useState('')
+    const [aspectRatio, setAspectratio] = useState('9:16')
+    const [productImage, setProductImage] = useState<File | null>(null)
+    const [modelImage, setModelImage] = useState<File | null>(null)
+    const [userPrompt, setUserPrompt] = useState('')
+    const [isGenerating, setIsGenerating] = useState(false)
 
 
 
-const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'product' | 'model') => {
-    if(e.target.files && e.target.files[0]){
-        if(type === 'product'){
-            setProductImage(e.target.files[0])
-        } else{
-            setModelImage(e.target.files[0])
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'product' | 'model') => {
+        if(e.target.files && e.target.files[0]){
+            if(type === 'product'){
+                setProductImage(e.target.files[0])
+            } else{
+                setModelImage(e.target.files[0])
+            }
         }
+
     }
 
-}
 
+    const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
 
-const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-}
+        if(!user) return toast("Please login to generate")
+
+        if(!productImage || !modelImage || !name || !aspectRatio || !productName){
+            return toast("Please fill all the required fields")
+        }
+
+        try {
+
+            setIsGenerating(true)
+            const formData = new FormData()
+
+            formData.append("name", name)
+            formData.append("productName", productName)
+            formData.append("productDescription", productDescription)
+            formData.append("images", productImage)
+            formData.append("images", modelImage)
+            formData.append("userPrompt", userPrompt)
+            formData.append("aspectRatio", aspectRatio)
+
+            const token = await getToken()
+
+            console.log("token:", token)
+            console.log("making api call now")
+
+            const { data } = await api.post('/api/project/create', formData, {
+                headers: { Authorization: `Bearer ${token}`}
+            })
+            console.log("api response:", data)
+
+            toast.success(data.message)
+            navigate('/result/' + data.projectId)
+
+        } catch (error: any){
+            setIsGenerating(false);
+            toast.error(error?.response?.data?.message || error.message)
+
+        }
+
+    }
     
 
 
@@ -89,7 +136,7 @@ const handleGenerate = async (e: React.FormEvent<HTMLFormElement>) => {
                 </div>
 
                 <div className="flex justify-center mt-10">
-                    <PrimaryButton disabled={isGenerating} className="px-10 py-3 rounded-md disabled:opacity-70 disabled:cursor-not-allowed">
+                    <PrimaryButton type="submit" disabled={isGenerating} className="px-10 py-3 rounded-md disabled:opacity-70 disabled:cursor-not-allowed">
                         {isGenerating ? (
                             <>
                             <Loader2Icon className="size-5 animate-spin" /> Generating...

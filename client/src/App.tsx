@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import { Route, Routes } from 'react-router-dom';
 import Footer from './components/Footer';
 import LenisScroll from './components/lenis';
@@ -14,6 +15,7 @@ import Result from './pages/Result';
 function App() {
 	return (
 		<>
+			<Toaster toastOptions={{style: {background: '#333', color: "#fff"}}} />
 			<SoftBackdrop />
 			<LenisScroll />
 			<Navbar />
