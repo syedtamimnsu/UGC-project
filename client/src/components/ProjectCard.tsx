@@ -1,6 +1,9 @@
+import { useAuth } from '@clerk/clerk-react'
 import { EllipsisIcon, ImageIcon, Loader2Icon, PlaySquareIcon, Share2Icon, Trash2Icon } from 'lucide-react'
 import React from 'react'
+import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
+import api from '../configs/axios'
 import type { Project } from '../types'
 import { GhostButton, PrimaryButton } from './Buttons'
 
@@ -9,6 +12,8 @@ const ProjectCard = ({ gen, setGenerations, forCommunity = false }: {
     setGenerations: React.Dispatch<React.SetStateAction<Project[]>>,
     forCommunity?: boolean
 }) => {
+
+    const {getToken} = useAuth()
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = React.useState(false);
 
@@ -16,11 +21,32 @@ const ProjectCard = ({ gen, setGenerations, forCommunity = false }: {
     const handleDelete = async (id: string)=>{
         const confirm = window.confirm('Are you sure you want to delete this project?');
         if(!confirm) return;
-        console.log(id)
+        
+        try{
+            const token = await getToken()
+            const {data} = await api.delete(`/api/project/${id}`, {
+                headers: {Authorization: `Bearer ${token}`}
+            })
+            setGenerations((generations)=>generations.filter((gen)=>gen.id !== id))
+            toast.success(data.message)
+        }catch(error: any){
+            toast.error(error?.response?.data?.message || error.message)
+            console.log(error)
+        }
     }
 
     const togglePublicsh = async (projectId: string)=>{
-        console.log(projectId)
+        try{
+            const token = await getToken()
+            const {data} = await api.get(`/api/user/publish/${projectId}`, {
+                headers: {Authorization: `Bearer ${token}`}
+            })
+            setGenerations((generations)=>generations.map((gen)=>gen.id === projectId ? {...gen, isPublished: data.isPublished} : gen))
+            toast.success(data.isPublished ? 'Project published' : 'Project unpublished')
+        }catch(error: any){
+            toast.error(error?.response?.data?.message || error.message)
+            console.log(error)
+        }
     }
 
     return (

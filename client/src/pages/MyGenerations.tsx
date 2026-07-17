@@ -1,8 +1,11 @@
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { dummyGenerations } from "../assets/assets";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { PrimaryButton } from '../components/Buttons';
 import ProjectCard from "../components/ProjectCard";
+import api from "../configs/axios";
 import type { Project } from "../types";
 
 
@@ -10,20 +13,36 @@ import type { Project } from "../types";
 
 function MyGenerations() {
 
+    const{user, isLoaded} = useUser()
+    const {getToken} = useAuth()
+    const navigate = useNavigate()
+
     const [generations, setGenerations] = useState<Project[]>([])
         const [loading, setLoading] = useState(true)
     
     
         const fetchMyGenerations = async () => {
-            setTimeout(() => {
-                setGenerations(dummyGenerations);
-                setLoading(false);
-            }, 3000)
+            try {
+                const token = await getToken();
+                const {data} = await api.get('/api/user/projects', {
+                    headers: {Authorization: `Bearer ${token}`}
+                })
+                setGenerations(data.projects)
+                setLoading(false)
+            }catch(error:any) {
+                toast.error(error?.response?.data?.message || error.message)
+                console.log(error)
+            }
         }
     
         useEffect(() => {
-            fetchMyGenerations();
-        }, [])
+            if(user){
+                fetchMyGenerations()
+            } else if(isLoaded && !user){
+                navigate('/')
+            }
+            
+        }, [user])
 
         
     return loading ? (
